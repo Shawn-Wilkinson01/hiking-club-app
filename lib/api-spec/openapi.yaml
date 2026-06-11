@@ -1,22 +1,30 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Hiking Club API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: trails
+    description: Trail operations
+  - name: events
+    description: Event operations
+  - name: members
+    description: Member operations
+  - name: announcements
+    description: Announcement operations
+  - name: dashboard
+    description: Dashboard summary operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +32,322 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /trails:
+    get:
+      operationId: listTrails
+      tags: [trails]
+      summary: List all trails
+      parameters:
+        - name: difficulty
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of trails
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Trail"
+    post:
+      operationId: createTrail
+      tags: [trails]
+      summary: Create a trail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrailInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Trail"
+
+  /trails/{id}:
+    get:
+      operationId: getTrail
+      tags: [trails]
+      summary: Get a trail by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Trail found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Trail"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateTrail
+      tags: [trails]
+      summary: Update a trail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrailUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Trail"
+    delete:
+      operationId: deleteTrail
+      tags: [trails]
+      summary: Delete a trail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /events:
+    get:
+      operationId: listEvents
+      tags: [events]
+      summary: List all events
+      responses:
+        "200":
+          description: List of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+    post:
+      operationId: createEvent
+      tags: [events]
+      summary: Create an event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+
+  /events/{id}:
+    get:
+      operationId: getEvent
+      tags: [events]
+      summary: Get an event by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Event found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateEvent
+      tags: [events]
+      summary: Update an event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+    delete:
+      operationId: deleteEvent
+      tags: [events]
+      summary: Delete an event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /members:
+    get:
+      operationId: listMembers
+      tags: [members]
+      summary: List all members
+      responses:
+        "200":
+          description: List of members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Member"
+    post:
+      operationId: createMember
+      tags: [members]
+      summary: Create a member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MemberInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Member"
+
+  /members/{id}:
+    get:
+      operationId: getMember
+      tags: [members]
+      summary: Get a member by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Member found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Member"
+        "404":
+          description: Not found
+
+  /announcements:
+    get:
+      operationId: listAnnouncements
+      tags: [announcements]
+      summary: List all announcements
+      responses:
+        "200":
+          description: List of announcements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Announcement"
+    post:
+      operationId: createAnnouncement
+      tags: [announcements]
+      summary: Create an announcement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnnouncementInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Announcement"
+
+  /announcements/{id}:
+    get:
+      operationId: getAnnouncement
+      tags: [announcements]
+      summary: Get an announcement by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Announcement found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Announcement"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteAnnouncement
+      tags: [announcements]
+      summary: Delete an announcement
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary stats
+      responses:
+        "200":
+          description: Summary data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +358,216 @@ components:
       required:
         - status
 
+    Trail:
+      type: object
+      required: [id, name, difficulty, distanceMiles, location, description, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        difficulty:
+          type: string
+          enum: [easy, moderate, hard, expert]
+        distanceMiles:
+          type: number
+        elevationFt:
+          type: ["integer", "null"]
+        location:
+          type: string
+        description:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    TrailInput:
+      type: object
+      required: [name, difficulty, distanceMiles, location, description]
+      properties:
+        name:
+          type: string
+        difficulty:
+          type: string
+          enum: [easy, moderate, hard, expert]
+        distanceMiles:
+          type: number
+        elevationFt:
+          type: ["integer", "null"]
+        location:
+          type: string
+        description:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+
+    TrailUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        difficulty:
+          type: string
+          enum: [easy, moderate, hard, expert]
+        distanceMiles:
+          type: number
+        elevationFt:
+          type: ["integer", "null"]
+        location:
+          type: string
+        description:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+
+    Event:
+      type: object
+      required: [id, title, date, location, description, attendeeCount, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        date:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+        trailId:
+          type: ["integer", "null"]
+        trailName:
+          type: ["string", "null"]
+        attendeeCount:
+          type: integer
+        imageUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    EventInput:
+      type: object
+      required: [title, date, location, description]
+      properties:
+        title:
+          type: string
+        date:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+        trailId:
+          type: ["integer", "null"]
+        attendeeCount:
+          type: integer
+        imageUrl:
+          type: ["string", "null"]
+
+    EventUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        date:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+        trailId:
+          type: ["integer", "null"]
+        attendeeCount:
+          type: integer
+        imageUrl:
+          type: ["string", "null"]
+
+    Member:
+      type: object
+      required: [id, name, joinedAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        bio:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        role:
+          type: ["string", "null"]
+        trailsCompleted:
+          type: integer
+        joinedAt:
+          type: string
+
+    MemberInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        bio:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        role:
+          type: ["string", "null"]
+        trailsCompleted:
+          type: integer
+
+    Announcement:
+      type: object
+      required: [id, title, content, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        pinned:
+          type: boolean
+        createdAt:
+          type: string
+
+    AnnouncementInput:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        pinned:
+          type: boolean
+
+    DashboardSummary:
+      type: object
+      required: [totalTrails, totalMembers, upcomingEvents, trailsByDifficulty, recentAnnouncements]
+      properties:
+        totalTrails:
+          type: integer
+        totalMembers:
+          type: integer
+        upcomingEvents:
+          type: integer
+        totalDistanceMiles:
+          type: number
+        trailsByDifficulty:
+          type: object
+          properties:
+            easy:
+              type: integer
+            moderate:
+              type: integer
+            hard:
+              type: integer
+            expert:
+              type: integer
+          required: [easy, moderate, hard, expert]
+        recentAnnouncements:
+          type: array
+          items:
+            $ref: "#/components/schemas/Announcement"
