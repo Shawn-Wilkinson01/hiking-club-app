@@ -6,7 +6,9 @@ import {
   eventsTable,
   membersTable,
   announcementsTable,
+  usersTable,
 } from "../server/db/schema/index.js";
+import { hashPassword } from "../server/lib/auth.js";
 
 const { Pool } = pg;
 
@@ -157,6 +159,17 @@ async function seed() {
     },
   ]);
   console.log("  Announcements seeded");
+
+  await db
+    .insert(usersTable)
+    .values({
+      username: "admin",
+      email: "admin@hikingclub.com",
+      passwordHash: await hashPassword("admin123"),
+      role: "admin",
+    })
+    .onConflictDoNothing();
+  console.log("  Admin user seeded (username: admin / password: admin123)");
 
   await pool.end();
   console.log("Done.");

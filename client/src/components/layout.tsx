@@ -1,10 +1,12 @@
 import { Link, useLocation } from "wouter";
-import { Compass, Map, Calendar, Users, Megaphone, Settings, Menu } from "lucide-react";
+import { Compass, Map, Calendar, Users, Megaphone, Settings, Menu, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useAuth } from "@/context/auth";
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
+  const { isAuthenticated, user, logout } = useAuth();
 
   const navItems = [
     { href: "/trails", label: "Trails", icon: Map },
@@ -12,6 +14,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
     { href: "/members", label: "Members", icon: Users },
     { href: "/announcements", label: "Noticeboard", icon: Megaphone },
   ];
+
+  function handleLogout() {
+    logout();
+    navigate("/");
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -39,12 +46,27 @@ export function Layout({ children }: { children: React.ReactNode }) {
               );
             })}
             <div className="h-4 w-px bg-border mx-2" />
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/admin">
-                <Settings className="h-4 w-4" />
-                <span className="sr-only">Admin</span>
-              </Link>
-            </Button>
+            {isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" asChild>
+                  <Link href="/admin">
+                    <Settings className="h-4 w-4" />
+                    <span className="sr-only">Admin</span>
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground gap-1.5">
+                  <LogOut className="h-4 w-4" />
+                  <span className="hidden lg:inline">{user?.username}</span>
+                </Button>
+              </div>
+            ) : (
+              <Button variant="ghost" size="sm" asChild className="text-muted-foreground gap-1.5">
+                <Link href="/login">
+                  <LogIn className="h-4 w-4" />
+                  Login
+                </Link>
+              </Button>
+            )}
           </nav>
 
           {/* Mobile Nav */}
@@ -70,10 +92,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     </Link>
                   ))}
                   <div className="my-4 border-t border-border" />
-                  <Link href="/admin" className="text-lg font-medium flex items-center gap-2 text-muted-foreground hover:text-primary">
-                    <Settings className="h-5 w-5" />
-                    Admin
-                  </Link>
+                  {isAuthenticated ? (
+                    <>
+                      <Link href="/admin" className="text-lg font-medium flex items-center gap-2 text-muted-foreground hover:text-primary">
+                        <Settings className="h-5 w-5" />
+                        Admin
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="text-lg font-medium flex items-center gap-2 text-muted-foreground hover:text-primary text-left"
+                      >
+                        <LogOut className="h-5 w-5" />
+                        Log out ({user?.username})
+                      </button>
+                    </>
+                  ) : (
+                    <Link href="/login" className="text-lg font-medium flex items-center gap-2 text-muted-foreground hover:text-primary">
+                      <LogIn className="h-5 w-5" />
+                      Login
+                    </Link>
+                  )}
                 </nav>
               </SheetContent>
             </Sheet>
