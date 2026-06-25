@@ -76,7 +76,7 @@ Login with: `admin` / `admin123`
 | Service | Port |
 |---|---|
 | Frontend (Vite) | 5173 |
-| API Server (Express) | 3001 |
+| API Server (Express) | 5000 |
 | PostgreSQL | 5432 |
 
 ## Project structure
@@ -98,7 +98,7 @@ Login with: `admin` / `admin123`
 │       └── hooks/      Custom hooks
 ├── scripts/            Utility scripts
 │   └── seed.ts         Database seeder
-├── vite.config.ts      Vite config (proxies /api to :3001)
+├── vite.config.ts      Vite config (proxies /api to :5000)
 ├── drizzle.config.ts   Drizzle Kit config
 └── esbuild.server.mjs  Server bundler
 ```
