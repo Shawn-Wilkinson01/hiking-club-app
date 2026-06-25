@@ -7,19 +7,21 @@ A community web application for outdoor enthusiasts — tracking trails, plannin
 - **Frontend**: React 19, Vite, Tailwind CSS v4, TanStack Query, wouter
 - **Backend**: Node.js, Express 5, pino logger
 - **Database**: PostgreSQL via Drizzle ORM
+- **Auth**: JWT (jsonwebtoken) + bcryptjs
 - **Language**: TypeScript throughout
 
 ## Requirements
 
 - Node.js 20+
-- npm 10+ (or pnpm / yarn)
-- PostgreSQL 15+
+- Docker (for PostgreSQL)
 
-## Setup
+## Quick Start
 
-### 1. Install dependencies
+### 1. Clone and install
 
 ```bash
+git clone https://github.com/Shawn-Wilkinson01/hiking-club-app.git
+cd hiking-club-app
 npm install
 ```
 
@@ -29,53 +31,34 @@ npm install
 cp .env.example .env
 ```
 
-Edit `.env` and set `DATABASE_URL` to your PostgreSQL connection string.
-
-### 3. Create the database
+### 3. Start PostgreSQL with Docker
 
 ```bash
-createdb hiking_club
+docker run -d --name hiking-pg \
+  -p 5432:5432 \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=hiking_club \
+  postgres:15-alpine
 ```
 
-### 4. Push the schema
+### 4. Set up the database
 
 ```bash
 npm run db:push
-```
-
-### 5. Seed sample data (optional)
-
-```bash
 npm run db:seed
 ```
 
-## Running
-
-### Development
-
-Starts the Express API server on port 5000 and the Vite dev server on port 5173 with hot reload.
+### 5. Run the app
 
 ```bash
 npm run dev
 ```
 
-Open http://localhost:5173 in your browser.
+Open **http://localhost:5173** in your browser.
 
-### Production build
+Login with: `admin` / `admin123`
 
-```bash
-npm run build
-```
-
-This builds the React app into `dist/public/` and bundles the server into `dist/index.mjs`.
-
-### Production start
-
-```bash
-npm start
-```
-
-The server listens on `PORT` (default 5000) and serves the built client from `dist/public/`.
+---
 
 ## Scripts
 
@@ -88,6 +71,14 @@ The server listens on `PORT` (default 5000) and serves the built client from `di
 | `npm run db:seed` | Seed the database with sample data |
 | `npm run typecheck` | Type-check server and client |
 
+## Ports
+
+| Service | Port |
+|---|---|
+| Frontend (Vite) | 5173 |
+| API Server (Express) | 3001 |
+| PostgreSQL | 5432 |
+
 ## Project structure
 
 ```
@@ -95,18 +86,19 @@ The server listens on `PORT` (default 5000) and serves the built client from `di
 │   ├── index.ts        Entry point
 │   ├── app.ts          Express app setup
 │   ├── db/             Drizzle ORM + schema
-│   ├── lib/            Logger, Zod validation schemas
+│   ├── lib/            Auth, logger, validation
 │   └── routes/         API route handlers
 ├── client/             React frontend
 │   ├── index.html      Vite entry
 │   └── src/
 │       ├── api/        API client (hooks + fetch)
 │       ├── components/ UI components (shadcn/ui)
+│       ├── context/    Auth context (JWT)
 │       ├── pages/      Page components
 │       └── hooks/      Custom hooks
 ├── scripts/            Utility scripts
 │   └── seed.ts         Database seeder
-├── vite.config.ts      Vite config (proxies /api to :5000)
+├── vite.config.ts      Vite config (proxies /api to :3001)
 ├── drizzle.config.ts   Drizzle Kit config
 └── esbuild.server.mjs  Server bundler
 ```
@@ -115,6 +107,8 @@ The server listens on `PORT` (default 5000) and serves the built client from `di
 
 | Method | Path | Description |
 |---|---|---|
+| POST | /api/auth/login | Login (returns JWT) |
+| GET | /api/auth/me | Current user (requires auth) |
 | GET | /api/healthz | Health check |
 | GET | /api/dashboard/summary | Dashboard stats |
 | GET/POST | /api/trails | List / create trails |
