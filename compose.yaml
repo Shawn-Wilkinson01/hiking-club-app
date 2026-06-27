@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16
+    container_name: hiking-club-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: hiking_club
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d hiking_club"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  app:
+    build: .
+    container_name: hiking-club-app
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgresql://admin:admin123@db:5432/hiking_club
+      NODE_ENV: production
+      PORT: 5000
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  db-data:

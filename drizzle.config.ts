@@ -1,8 +1,4 @@
 import { defineConfig } from "drizzle-kit";
-import { fileURLToPath } from "url";
-import path from "path";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
@@ -11,7 +7,7 @@ if (!process.env.DATABASE_URL) {
 }
 
 export default defineConfig({
-  schema: path.join(__dirname, "server/db/schema/index.ts"),
+  schema: "./server/db/schema/index.ts",
   dialect: "postgresql",
   dbCredentials: {
     url: process.env.DATABASE_URL,
